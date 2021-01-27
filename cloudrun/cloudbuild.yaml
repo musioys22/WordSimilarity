@@ -1,0 +1,23 @@
+steps:
+  # Retrieve the exported model by the training
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [ '-m', 'cp', '-r', '${_EXPORT_BUCKET}', '.' ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/ddd-voyager/nlp/word-similar-api', '.', '-f', 'Dockerfile' ]
+  # push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/ddd-voyager/nlp/word-similar-api']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'get-similar-news'
+      - '--image=gcr.io/ddd-voyager/nlp/word-similar-api:latest'
+      - '--region=asia-east1'
+      - '--memory=4Gi'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+images:
+  - 'gcr.io/ddd-voyager/nlp/word-similar-api'
+substitutions:
+    _EXPORT_BUCKET: gs://embedding-zh/files/model_exclude_wiki
