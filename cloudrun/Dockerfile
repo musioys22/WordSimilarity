@@ -1,10 +1,10 @@
 FROM python:3.7-slim
 
-ENV MODEL_DIR=/api/model_exclude_wiki/word2vec.model
+ENV MODEL_DIR=/api/model/word2vec.model
 
 WORKDIR /api
 COPY . /api
-COPY model_exclude_wiki /api/model_exclude_wiki
+COPY model /api/model
 
 RUN pip install Flask gunicorn gensim
 
